@@ -6,7 +6,6 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.path.json.JsonPath;
 
 import org.bson.types.ObjectId;
-import org.hamcrest.core.Is;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -65,6 +64,7 @@ public class ProductResourceTest {
 
         return sb.toString().substring(0, numchars);
     }
+    
     @Test
     void shouldNotGetUnknownProduct() {
         ObjectId id = new ObjectId(getRandomHexString(24));
