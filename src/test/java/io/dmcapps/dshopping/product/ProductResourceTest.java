@@ -46,6 +46,7 @@ public class ProductResourceTest {
     private static final int NB_PRODUCTS= 0;
     private static ObjectId productId;
 
+
     @Test
     public void testHelloEndpoint() {
         given()
