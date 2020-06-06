@@ -21,22 +21,31 @@ import io.quarkus.runtime.LaunchMode;
 
 public class DatabaseInitialization {
 
-    private static final Logger LOGGER = Logger.getLogger(DatabaseInitialization.class);
+    private static final Logger LOGGER = Logger.getLogger(
+            DatabaseInitialization.class);
 
     public static void initialize(String profile) {
-        String filename = "../src/main/resources/import.json";
+        String path = "../src/main/resources/";
+        String filename = "import.json";
+
         if(profile == "test"){
-            filename = "./src/main/resources/import.json";
+            path = "./src/main/resources/";
+        }
+        
+        MongoCollection<Document> collection = Product
+                .mongoDatabase()
+                .getCollection("products");
+
+        if (profile == "dev") {
+            BasicDBObject document = new BasicDBObject();
+            DeleteResult result = collection
+                    .deleteMany(document);
+            LOGGER.info("Number of Deleted Document(s) : " +
+                        result.getDeletedCount());
         }
         LOGGER.info("Launch mode: " + LaunchMode.current());
-        LOGGER.info("Working Directory = " + System.getProperty("user.dir"));
-
-    
-        MongoCollection<Document> collection = Product.mongoDatabase().getCollection("products");
-
-        BasicDBObject document = new BasicDBObject();
-        DeleteResult result = collection.deleteMany(document);
-        LOGGER.info("Number of Deleted Document(s) : " + result.getDeletedCount());
+        LOGGER.info("Working Directory = " + 
+                System.getProperty("user.dir"));
 
         int count = 0;
         int batch = 100;
@@ -44,14 +53,19 @@ public class DatabaseInitialization {
         List<InsertOneModel<Document>> docs = new ArrayList<>();
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(filename));
+            BufferedReader br = new BufferedReader(
+                    new FileReader(path + filename));
             String line;
             while ((line = br.readLine()) != null) {
-                docs.add(new InsertOneModel<>(Document.parse(line)));
+                docs.add(new InsertOneModel<>(
+                        Document.parse(line)));
                 count++;
                 if (count == batch) {
-                    collection.bulkWrite(docs, new BulkWriteOptions().ordered(false));
-                    LOGGER.info("Number of New Document(s): 100");  
+                    collection.bulkWrite(
+                        docs, 
+                        new BulkWriteOptions()
+                            .ordered(false));
+                    LOGGER.info("Number of New Document(s): " + batch);  
                     docs.clear();
                     count = 0;
                 }
@@ -63,7 +77,10 @@ public class DatabaseInitialization {
             LOGGER.error(e.getMessage());
         }
         if (count > 0) {
-            collection.bulkWrite(docs, new BulkWriteOptions().ordered(false));
+            collection.bulkWrite(
+                    docs, 
+                    new BulkWriteOptions()
+                        .ordered(false));
             LOGGER.info("The Numbers of New Document(s): " + count);  
         }     
         LOGGER.info("import.json file loaded");
