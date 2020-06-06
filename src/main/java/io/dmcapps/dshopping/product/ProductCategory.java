@@ -1,10 +1,6 @@
 package io.dmcapps.dshopping.product;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,26 +15,30 @@ import io.quarkus.mongodb.panache.MongoEntity;
 import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
 
 @MongoEntity(collection = "products")
-public class Product extends PanacheMongoEntityBase {
+public class ProductCategory extends PanacheMongoEntityBase {
 
     private static final Logger LOGGER = Logger.getLogger(
-            Product.class);
+            ProductCategory.class);
 
     @BsonId
     @JsonSerialize(using = ToStringSerializer.class)
     public ObjectId id;
     @NotNull
-    @Size(min = 3, max = 120)
     public String name;
-    @NotNull
-    public ProductCategory category;
-    @NotNull
-    public int brand;
-    public String picture;
-    public BigInteger barcode;
-    public HashMap<String, Object> description;
-    public String[] tags;
+    public ProductCategory parent;
 
+    public ProductCategory() {
+    }
+
+    public ProductCategory(String name, ProductCategory parent) {
+        this.name = name;
+        this.parent = parent;
+    }
+
+    public ProductCategory(String name) {
+        this.name = name;
+        this.parent = null;
+    }
 
     @Override
     public String toString() {

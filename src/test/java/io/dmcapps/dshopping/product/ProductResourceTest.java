@@ -20,6 +20,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import static javax.ws.rs.core.Response.Status.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -36,12 +37,14 @@ public class ProductResourceTest {
 
     private static final String DEFAULT_NAME = "Avena en caja";
     private static final String UPDATED_NAME = "Avena en caja (updated)";
+    private static final ProductCategory DEFAULT_CATEGORY = new ProductCategory("Vegetales");
+    private static final ProductCategory UPDATED_CATEGORY = new ProductCategory("Bebidas");
     private static final int DEFAULT_BRAND = 1;
     private static final int UPDATED_BRAND = 2;
     private static final String DEFAULT_PICTURE = "avena_en_caja.png";
     private static final String UPDATED_PICTURE = "avena_en_caja_updated.png";
-    private static final ProductDescription DEFAULT_DESCRIPTION = new ProductDescription(2.5, "1234567");
-    private static final ProductDescription UPDATED_DESCRIPTION = new ProductDescription(20.5, "7654321");
+    private static final HashMap<String, Object> DEFAULT_DESCRIPTION = new HashMap<String, Object>();
+    private static final HashMap<String, Object> UPDATED_DESCRIPTION = new HashMap<String, Object>();
 
     private static final int NB_PRODUCTS= 1000;
     private static ObjectId productId;
@@ -106,8 +109,12 @@ public class ProductResourceTest {
     @Test
     @Order(2)
     void shouldAddAnItem() {
+        DEFAULT_DESCRIPTION.put("weight", 10.5);
+        DEFAULT_DESCRIPTION.put("sku", "1234567");
+
         Product product = new Product();
         product.name = DEFAULT_NAME;
+        product.category = DEFAULT_CATEGORY;
         product.brand = DEFAULT_BRAND;
         product.picture = DEFAULT_PICTURE;
         product.description = DEFAULT_DESCRIPTION;
@@ -139,6 +146,10 @@ public class ProductResourceTest {
         String expectedName = DEFAULT_NAME;
         String name = response.getString("name");
         assertEquals(expectedName, name);
+        
+        String expectedCategory = DEFAULT_CATEGORY.name;
+        String category = response.getString("category.name");
+        assertEquals(expectedCategory, category);
 
         int expectedBrand = DEFAULT_BRAND;
         int brand = response.getInt("brand");
@@ -148,11 +159,11 @@ public class ProductResourceTest {
         String picture = response.getString("picture");
         assertEquals(expectedPicture, picture);
 
-        double expectedWeight = DEFAULT_DESCRIPTION.weight;
+        double expectedWeight = (double) DEFAULT_DESCRIPTION.get("weight");
         double weight = response.getDouble("description.weight");
         assertTrue(expectedWeight == weight);
 
-        String expectedSku = DEFAULT_DESCRIPTION.sku;
+        String expectedSku = (String) DEFAULT_DESCRIPTION.get("sku");
         String sku = response.getString("description.sku");
         assertEquals(expectedSku, sku);
 
@@ -167,9 +178,12 @@ public class ProductResourceTest {
     @Order(3)
     @Context
     void shouldUpdateAnItem(){
+        UPDATED_DESCRIPTION.put("weight", 21.0);
+        UPDATED_DESCRIPTION.put("sku", "7654321");
         Product product = new Product();
         product.id = productId;
         product.name = UPDATED_NAME;
+        product.category = UPDATED_CATEGORY;
         product.brand = UPDATED_BRAND;
         product.picture = UPDATED_PICTURE;
         product.description = UPDATED_DESCRIPTION;
@@ -198,11 +212,11 @@ public class ProductResourceTest {
         String picture = response.getString("picture");
         assertEquals(expectedPicture, picture);
 
-        double expectedWeight = UPDATED_DESCRIPTION.weight;
+        double expectedWeight = (double) UPDATED_DESCRIPTION.get("weight");
         double weight = response.getDouble("description.weight");
         assertTrue(expectedWeight == weight);
 
-        String expectedSku = UPDATED_DESCRIPTION.sku;
+        String expectedSku = (String) UPDATED_DESCRIPTION.get("sku");
         String sku = response.getString("description.sku");
         assertEquals(expectedSku, sku);
 
