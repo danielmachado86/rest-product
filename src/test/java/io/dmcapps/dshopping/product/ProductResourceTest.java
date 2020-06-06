@@ -43,7 +43,7 @@ public class ProductResourceTest {
     private static final ProductDescription DEFAULT_DESCRIPTION = new ProductDescription(2.5, "1234567");
     private static final ProductDescription UPDATED_DESCRIPTION = new ProductDescription(20.5, "7654321");
 
-    private static final int NB_PRODUCTS= 0;
+    private static final int NB_PRODUCTS= 1000;
     private static ObjectId productId;
 
 
@@ -55,6 +55,23 @@ public class ProductResourceTest {
              .statusCode(200)
              .body(is("hello"));
     }
+
+    @Test
+    void shouldPingOpenAPI() {
+        given()
+            .header(ACCEPT, APPLICATION_JSON)
+            .when().get("/openapi")
+            .then()
+            .statusCode(OK.getStatusCode());
+    }
+
+    @Test
+    void shouldPingSwaggerUI() {
+        given()
+            .when().get("/swagger-ui")
+            .then()
+            .statusCode(OK.getStatusCode());
+}
 
     private String getRandomHexString(int numchars){
         Random r = new Random();

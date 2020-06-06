@@ -1,8 +1,9 @@
-package io.dmcapps.dshopping.product.beans;
+package io.dmcapps.dshopping.product.init;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,11 @@ public class DatabaseInitialization {
 
     private static final Logger LOGGER = Logger.getLogger(DatabaseInitialization.class);
 
-    public void initialize() throws Exception {
+    public static void initialize(String profile) {
+        String filename = "../src/main/resources/import.json";
+        if(profile == "test"){
+            filename = "./src/main/resources/import.json";
+        }
         LOGGER.info("Launch mode: " + LaunchMode.current());
         LOGGER.info("Working Directory = " + System.getProperty("user.dir"));
 
@@ -38,7 +43,8 @@ public class DatabaseInitialization {
 
         List<InsertOneModel<Document>> docs = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader("./src/main/resources/import.json"))) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
             String line;
             while ((line = br.readLine()) != null) {
                 docs.add(new InsertOneModel<>(Document.parse(line)));
@@ -50,6 +56,11 @@ public class DatabaseInitialization {
                     count = 0;
                 }
             }
+            br.close();
+        } catch (FileNotFoundException e){
+            LOGGER.error("File \"import.json\" not found");
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
         }
         if (count > 0) {
             collection.bulkWrite(docs, new BulkWriteOptions().ordered(false));

@@ -31,7 +31,7 @@ public class ProductResource {
     @Inject
     ProductService service;
 
-    @Operation(summary = "Returns a product with id")
+    @Operation(summary = "Returns a product with given id")
     @APIResponse(responseCode = "200", content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = Product.class)))
     @APIResponse(responseCode = "204", description = "The product was not found for a given identifier")
     @GET

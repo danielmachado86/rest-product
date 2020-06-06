@@ -14,7 +14,7 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("/")
 @OpenAPIDefinition(
     info = @Info(title = "Product API",
-        description = "This API allows CRUD operations on a product",
+        description = "This API allows CRUD operations on a product catalog",
         version = "1.0",
         contact = @Contact(name = "Daniel Machado", url = "https://github.com/danielmachado86")),
     servers = {
