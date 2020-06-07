@@ -1,6 +1,6 @@
 package io.dmcapps.dshopping.product;
 
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.validation.constraints.NotNull;
@@ -33,11 +33,11 @@ public class Product extends PanacheMongoEntityBase {
     @NotNull
     public ProductCategory category;
     @NotNull
-    public int brand;
+    public Brand brand;
     public String picture;
-    public BigInteger barcode;
+    public String barcode;
     public HashMap<String, Object> description;
-    public String[] tags;
+    public ArrayList<String> tags;
 
 
     @Override

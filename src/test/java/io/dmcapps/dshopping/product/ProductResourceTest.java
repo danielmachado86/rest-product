@@ -39,8 +39,8 @@ public class ProductResourceTest {
     private static final String UPDATED_NAME = "Avena en caja (updated)";
     private static final ProductCategory DEFAULT_CATEGORY = new ProductCategory("Vegetales");
     private static final ProductCategory UPDATED_CATEGORY = new ProductCategory("Bebidas");
-    private static final int DEFAULT_BRAND = 1;
-    private static final int UPDATED_BRAND = 2;
+    private static final Brand DEFAULT_BRAND = new Brand("Ramo", "ramo.png", "Aqui se fabrica el chocorramo");
+    private static final Brand UPDATED_BRAND = new Brand("Ramo S.A.", "ramosa.png", "Aqui se fabrica el gansito");
     private static final String DEFAULT_PICTURE = "avena_en_caja.png";
     private static final String UPDATED_PICTURE = "avena_en_caja_updated.png";
     private static final HashMap<String, Object> DEFAULT_DESCRIPTION = new HashMap<String, Object>();
@@ -151,9 +151,17 @@ public class ProductResourceTest {
         String category = response.getString("category.name");
         assertEquals(expectedCategory, category);
 
-        int expectedBrand = DEFAULT_BRAND;
-        int brand = response.getInt("brand");
-        assertTrue(expectedBrand == brand);
+        String expectedBrandName = DEFAULT_BRAND.name;
+        String brandName = response.getString("brand.name");
+        assertEquals(expectedBrandName, brandName);
+
+        String expectedBrandPicture = DEFAULT_BRAND.picture;
+        String brandPicture = response.getString("brand.picture");
+        assertEquals(expectedBrandPicture, brandPicture);
+
+        String expectedBrandDescription = DEFAULT_BRAND.description;
+        String brandDescription = response.getString("brand.description");
+        assertEquals(expectedBrandDescription, brandDescription);
 
         String expectedPicture = DEFAULT_PICTURE;
         String picture = response.getString("picture");
@@ -204,9 +212,17 @@ public class ProductResourceTest {
         String name = response.getString("name");
         assertEquals(expectedName, name);
 
-        int expectedBrand = UPDATED_BRAND;
-        int brand = response.getInt("brand");
-        assertTrue(expectedBrand == brand);
+        String expectedBrandName = UPDATED_BRAND.name;
+        String brandName = response.getString("brand.name");
+        assertEquals(expectedBrandName, brandName);
+
+        String expectedBrandPicture = UPDATED_BRAND.picture;
+        String brandPicture = response.getString("brand.picture");
+        assertEquals(expectedBrandPicture, brandPicture);
+
+        String expectedBrandDescription = UPDATED_BRAND.description;
+        String brandDescription = response.getString("brand.description");
+        assertEquals(expectedBrandDescription, brandDescription);
 
         String expectedPicture = UPDATED_PICTURE;
         String picture = response.getString("picture");
