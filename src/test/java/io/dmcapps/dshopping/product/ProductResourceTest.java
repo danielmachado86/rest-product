@@ -37,8 +37,8 @@ public class ProductResourceTest {
 
     private static final String DEFAULT_NAME = "Avena en caja";
     private static final String UPDATED_NAME = "Avena en caja (updated)";
-    private static final ProductCategory DEFAULT_CATEGORY = new ProductCategory("Vegetales");
-    private static final ProductCategory UPDATED_CATEGORY = new ProductCategory("Bebidas");
+    private static final ProductCategory DEFAULT_CATEGORY = new ProductCategory("Vegetales", -1);
+    private static final ProductCategory UPDATED_CATEGORY = new ProductCategory("Bebidas", -1);
     private static final Brand DEFAULT_BRAND = new Brand("Ramo", "ramo.png", "Aqui se fabrica el chocorramo");
     private static final Brand UPDATED_BRAND = new Brand("Ramo S.A.", "ramosa.png", "Aqui se fabrica el gansito");
     private static final String DEFAULT_PICTURE = "avena_en_caja.png";
@@ -47,6 +47,7 @@ public class ProductResourceTest {
     private static final HashMap<String, Object> UPDATED_DESCRIPTION = new HashMap<String, Object>();
 
     private static final int NB_PRODUCTS= 1000;
+    private static final int FOUND_PRODUCTS= 2;
     private static ObjectId productId;
 
 
@@ -104,6 +105,18 @@ public class ProductResourceTest {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
             .extract().body().as(getProductTypeRef());
         assertEquals(NB_PRODUCTS, products.size());
+    }
+
+    @Test
+    void shouldFindProducts() {
+        List<Product> products = given()
+            .queryParam("q", "Cake - Pancake")
+            .when().get("/api/products")
+            .then()
+            .statusCode(OK.getStatusCode())
+            .header(CONTENT_TYPE, APPLICATION_JSON)
+            .extract().body().as(getProductTypeRef());
+        assertEquals(FOUND_PRODUCTS, products.size());
     }
 
     @Test

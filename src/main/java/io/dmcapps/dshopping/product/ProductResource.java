@@ -35,7 +35,7 @@ public class ProductResource {
     @APIResponse(responseCode = "200", content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = Product.class)))
     @APIResponse(responseCode = "204", description = "The product was not found for a given identifier")
     @GET
-    @Path("/{id}")
+    @Path("{id}")
     public Response getProduct(
         @Parameter(description = "Product identifier", required = true)
         @PathParam("id") String id) {
@@ -49,12 +49,34 @@ public class ProductResource {
         }
     }
 
+    @Operation(summary = "Returns product search result")
+    @APIResponse(responseCode = "200", content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = Product.class)))
+    @APIResponse(responseCode = "204", description = "No product was not found for given search query")
+    @GET
+    public Response getProductSearch(
+        @Parameter(description = "Search query", required = false)
+        @QueryParam("q") String query) {
+            List<Product> product = null;
+            if (query != null) {
+                product = service.searchProducts(query);
+            } else {
+                product = service.returnAllProducts();
+            }
+            if (product != null) {
+                LOGGER.debug("Found product " + product);
+                return Response.ok(product).build();
+            } else {
+                LOGGER.debug("No product found with query " + query);
+                return Response.noContent().build();
+        }
+    }
+
     @Operation(summary = "Returns all the products from the database")
     @APIResponse(responseCode = "200", content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = Product.class, type = SchemaType.ARRAY)))
     @APIResponse(responseCode = "204", description = "No products")
     @GET
     public Response getAllProducts() {
-        List<Product> products = service.findAllProducts();
+        List<Product> products = service.returnAllProducts();
         LOGGER.debug("Total number of products " + products);
         return Response.ok(products).build();
     }

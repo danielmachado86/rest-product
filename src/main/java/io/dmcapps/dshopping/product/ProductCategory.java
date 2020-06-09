@@ -25,19 +25,19 @@ public class ProductCategory extends PanacheMongoEntityBase {
     public ObjectId id;
     @NotNull
     public String name;
-    public ProductCategory parent;
+    public int parent;
 
     public ProductCategory() {
     }
 
-    public ProductCategory(String name, ProductCategory parent) {
+    public ProductCategory(String name, int parent) {
         this.name = name;
         this.parent = parent;
     }
 
     public ProductCategory(String name) {
         this.name = name;
-        this.parent = null;
+        this.parent = -1;
     }
 
     @Override
