@@ -34,7 +34,7 @@ class ProductApplicationLifeCycle {
         LOGGER.info(":......:::..:::::..:::::..:::::..:::::..::........:::.......::::......:::: ");
         LOGGER.info("                                                         Powered by Quarkus");
         
-        LOGGER.infof("The application PRODUCT is starting with profile `%s`", ProfileManager.getActiveProfile());
+        LOGGER.infof("The application PRODUCT CATALOG is starting with profile `%s`", ProfileManager.getActiveProfile());
         
         if(ProfileManager.getActiveProfile() == "dev" || ProfileManager.getActiveProfile() == "test"){
             DatabaseInitialization.initialize(ProfileManager.getActiveProfile());
