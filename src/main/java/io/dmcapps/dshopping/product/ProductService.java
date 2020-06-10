@@ -3,21 +3,16 @@ package io.dmcapps.dshopping.product;
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 
-import com.mongodb.BasicDBObject;
 
 import org.bson.types.ObjectId;
-
-import io.quarkus.mongodb.panache.PanacheQuery;
-import io.quarkus.panache.common.Page;
 
 import static javax.transaction.Transactional.TxType.REQUIRED;
 import static javax.transaction.Transactional.TxType.SUPPORTS;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 @Transactional(REQUIRED)
@@ -35,6 +30,27 @@ public class ProductService {
     
     @Transactional(SUPPORTS)
     public List<Product> searchProducts(String query) {
+        String param = queryStringProcessor(query);
+        Stream<Product> results = Product.stream(param);
+        List<Product> processedResults = processResults(query, results);
+        return processedResults;
+    }
+
+    private List<Product> processResults(String query, Stream<Product> results) {
+        List<Result> processedResults = results
+            .map(product -> Adapter.productToResult(query, product))
+            .sorted()
+            .collect(Collectors.toList());
+        Collections.sort(processedResults, Collections.reverseOrder());
+
+        List<Product> products = processedResults.stream()
+            .map(result -> result.product)
+            .collect(Collectors.toList());
+
+        return products;
+    }
+
+    private String queryStringProcessor(String query) {
         String[] splittedQuery = query.split(" ");
         String paramName = "";
         String paramCategoryName = "";
@@ -43,11 +59,10 @@ public class ProductService {
             paramCategoryName += String.format("{'category.name':{'$regex':/.*%s.*/i}},", s);
         }
         String param = paramName + paramCategoryName;
-        PanacheQuery<Product> results = Product.find("{'$or':[" + param + "]}");
-        results.page(Page.ofSize(100));
-        List<Product> productsPage = results.list();
-        return productsPage;
+        return param;
     }
+
+    
 
     public Product persistProduct(Product product) {
         Product.persist(product);

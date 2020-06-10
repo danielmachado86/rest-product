@@ -56,15 +56,13 @@ public class ProductResource {
     public Response getProductSearch(
         @Parameter(description = "Search query", required = false)
         @QueryParam("q") String query) {
-            List<Product> product = null;
+            List<Product> results = null;
             if (query != null) {
-                product = service.searchProducts(query);
-            } else {
-                product = service.returnAllProducts();
-            }
-            if (product != null) {
-                LOGGER.debug("Found product " + product);
-                return Response.ok(product).build();
+                results = service.searchProducts(query);
+            } 
+            if (results != null) {
+                LOGGER.debug("Found products " + results);
+                return Response.ok(results).build();
             } else {
                 LOGGER.debug("No product found with query " + query);
                 return Response.noContent().build();

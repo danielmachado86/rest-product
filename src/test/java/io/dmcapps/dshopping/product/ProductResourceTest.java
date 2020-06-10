@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
@@ -35,19 +34,19 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProductResourceTest {
 
-    private static final String DEFAULT_NAME = "Avena en caja";
-    private static final String UPDATED_NAME = "Avena en caja (updated)";
+    private static final String DEFAULT_NAME = "Wine - White, Chardonnay";
+    private static final String UPDATED_NAME = "Wine - Prosecco Valdobiaddene";
     private static final ProductCategory DEFAULT_CATEGORY = new ProductCategory("Vegetales", -1);
     private static final ProductCategory UPDATED_CATEGORY = new ProductCategory("Bebidas", -1);
     private static final Brand DEFAULT_BRAND = new Brand("Ramo", "ramo.png", "Aqui se fabrica el chocorramo");
     private static final Brand UPDATED_BRAND = new Brand("Ramo S.A.", "ramosa.png", "Aqui se fabrica el gansito");
-    private static final String DEFAULT_PICTURE = "avena_en_caja.png";
-    private static final String UPDATED_PICTURE = "avena_en_caja_updated.png";
+    private static final String DEFAULT_PICTURE = "wine_white_chardonnay.png";
+    private static final String UPDATED_PICTURE = "wine_prosecco_valdobiaddene.png";
     private static final HashMap<String, Object> DEFAULT_DESCRIPTION = new HashMap<String, Object>();
     private static final HashMap<String, Object> UPDATED_DESCRIPTION = new HashMap<String, Object>();
 
-    private static final int NB_PRODUCTS= 1000;
-    private static final int FOUND_PRODUCTS= 2;
+    private static final int NB_PRODUCTS= 79;
+    private static final int FOUND_PRODUCTS= 79;
     private static ObjectId productId;
 
 
@@ -100,7 +99,9 @@ public class ProductResourceTest {
     @Test
     @Order(1)
     void shouldGetInitialItems() {
-        List<Product> products = get("/api/products").then()
+        List<Product> products = given()
+            .queryParam("q", "wine")
+            .when().get("/api/products").then()
             .statusCode(OK.getStatusCode())
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
             .extract().body().as(getProductTypeRef());
@@ -110,7 +111,7 @@ public class ProductResourceTest {
     @Test
     void shouldFindProducts() {
         List<Product> products = given()
-            .queryParam("q", "Cake - Pancake")
+            .queryParam("q", "Wine - White, Chardonnay")
             .when().get("/api/products")
             .then()
             .statusCode(OK.getStatusCode())
@@ -188,7 +189,9 @@ public class ProductResourceTest {
         String sku = response.getString("description.sku");
         assertEquals(expectedSku, sku);
 
-        List<Product> products = get("/api/products").then()
+        List<Product> products = given()
+            .queryParam("q", "wine")
+            .when().get("/api/products").then()
             .statusCode(OK.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_JSON)
             .extract().body().as(getProductTypeRef());
@@ -249,7 +252,9 @@ public class ProductResourceTest {
         String sku = response.getString("description.sku");
         assertEquals(expectedSku, sku);
 
-        List<Product> products = get("/api/products").then()
+        List<Product> products = given()
+            .queryParam("q", "wine")
+            .when().get("/api/products").then()
             .statusCode(OK.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_JSON)
             .extract().body().as(getProductTypeRef());
@@ -265,7 +270,9 @@ public class ProductResourceTest {
             .then()
             .statusCode(NO_CONTENT.getStatusCode());
 
-        List<Product> products = get("/api/products").then()
+        List<Product> products = given()
+            .queryParam("q", "wine")
+            .when().get("/api/products").then()
             .statusCode(OK.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_JSON)
             .extract().body().as(getProductTypeRef());
