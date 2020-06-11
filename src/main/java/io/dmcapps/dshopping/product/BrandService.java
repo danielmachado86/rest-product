@@ -4,8 +4,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import org.bson.types.ObjectId;
-
 import java.util.List;
 
 import static javax.transaction.Transactional.TxType.REQUIRED;
@@ -21,7 +19,7 @@ public class BrandService {
     }
 
     @Transactional(SUPPORTS)
-    public Brand findBrandById(ObjectId id) {
+    public Brand findBrandById(String id) {
         return Brand.findById(id);
     }
 
@@ -32,13 +30,13 @@ public class BrandService {
 
     public Brand updateBrand(@Valid Brand brand) {
         Brand entity = Brand.findById(brand.id);
-        entity.name = brand.name;
+        entity.id = brand.id;
         entity.picture = brand.picture;
         entity.description = brand.description;
         return entity;
     }
 
-    public void deleteBrand(ObjectId id) {
+    public void deleteBrand(String id) {
         Brand brand = Brand.findById(id);
         brand.delete();
     }

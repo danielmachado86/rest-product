@@ -46,7 +46,7 @@ public class ProductResourceTest {
     private static final HashMap<String, Object> UPDATED_DESCRIPTION = new HashMap<String, Object>();
 
     private static final int NB_PRODUCTS= 1000;
-    private static final int FOUND_PRODUCTS= 79;
+    private static final int FOUND_PRODUCTS = 66;
     private static ObjectId productId;
 
 
@@ -110,7 +110,7 @@ public class ProductResourceTest {
     @Test
     void shouldFindProducts() {
         List<Product> products = given()
-            .queryParam("q", "Wine - White, Chardonnay")
+            .queryParam("q", "Wine - White, Schroder And Schyl")
             .when().get("/api/search")
             .then()
             .statusCode(OK.getStatusCode())
@@ -164,8 +164,8 @@ public class ProductResourceTest {
         String category = response.getString("category.name");
         assertEquals(expectedCategory, category);
 
-        String expectedBrandName = DEFAULT_BRAND.name;
-        String brandName = response.getString("brand.name");
+        String expectedBrandName = DEFAULT_BRAND.id;
+        String brandName = response.getString("brand.id");
         assertEquals(expectedBrandName, brandName);
 
         String expectedBrandPicture = DEFAULT_BRAND.picture;
@@ -226,8 +226,8 @@ public class ProductResourceTest {
         String name = response.getString("name");
         assertEquals(expectedName, name);
 
-        String expectedBrandName = UPDATED_BRAND.name;
-        String brandName = response.getString("brand.name");
+        String expectedBrandName = UPDATED_BRAND.id;
+        String brandName = response.getString("brand.id");
         assertEquals(expectedBrandName, brandName);
 
         String expectedBrandPicture = UPDATED_BRAND.picture;
