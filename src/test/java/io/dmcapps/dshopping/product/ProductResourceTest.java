@@ -45,7 +45,7 @@ public class ProductResourceTest {
     private static final HashMap<String, Object> DEFAULT_DESCRIPTION = new HashMap<String, Object>();
     private static final HashMap<String, Object> UPDATED_DESCRIPTION = new HashMap<String, Object>();
 
-    private static final int NB_PRODUCTS= 79;
+    private static final int NB_PRODUCTS= 1000;
     private static final int FOUND_PRODUCTS= 79;
     private static ObjectId productId;
 
@@ -100,7 +100,6 @@ public class ProductResourceTest {
     @Order(1)
     void shouldGetInitialItems() {
         List<Product> products = given()
-            .queryParam("q", "wine")
             .when().get("/api/products").then()
             .statusCode(OK.getStatusCode())
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -112,7 +111,7 @@ public class ProductResourceTest {
     void shouldFindProducts() {
         List<Product> products = given()
             .queryParam("q", "Wine - White, Chardonnay")
-            .when().get("/api/products")
+            .when().get("/api/search")
             .then()
             .statusCode(OK.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_JSON)
@@ -190,7 +189,6 @@ public class ProductResourceTest {
         assertEquals(expectedSku, sku);
 
         List<Product> products = given()
-            .queryParam("q", "wine")
             .when().get("/api/products").then()
             .statusCode(OK.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_JSON)
@@ -253,7 +251,6 @@ public class ProductResourceTest {
         assertEquals(expectedSku, sku);
 
         List<Product> products = given()
-            .queryParam("q", "wine")
             .when().get("/api/products").then()
             .statusCode(OK.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_JSON)
@@ -271,7 +268,6 @@ public class ProductResourceTest {
             .statusCode(NO_CONTENT.getStatusCode());
 
         List<Product> products = given()
-            .queryParam("q", "wine")
             .when().get("/api/products").then()
             .statusCode(OK.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_JSON)
