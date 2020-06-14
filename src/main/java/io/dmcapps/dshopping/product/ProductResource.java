@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 @Path("/api/products")
 @Produces(APPLICATION_JSON)
@@ -92,12 +91,5 @@ public class ProductResource {
         service.deleteProduct(new ObjectId(id));
         LOGGER.debug("Product deleted with " + id);
         return Response.noContent().build();
-    }
-
-    @GET
-    @Produces(TEXT_PLAIN)
-    @Path("/hello")
-    public String hello() {
-        return "hello";
     }
 }

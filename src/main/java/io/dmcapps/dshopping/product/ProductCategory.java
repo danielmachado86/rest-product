@@ -1,6 +1,5 @@
 package io.dmcapps.dshopping.product;
 
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,13 +7,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.types.ObjectId;
 import org.jboss.logging.Logger;
 
 import io.quarkus.mongodb.panache.MongoEntity;
 import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
 
-@MongoEntity(collection = "products")
+@MongoEntity(collection = "category")
 public class ProductCategory extends PanacheMongoEntityBase {
 
     private static final Logger LOGGER = Logger.getLogger(
@@ -22,22 +20,10 @@ public class ProductCategory extends PanacheMongoEntityBase {
 
     @BsonId
     @JsonSerialize(using = ToStringSerializer.class)
-    public ObjectId id;
-    @NotNull
-    public String name;
+    public String id;
     public int parent;
 
     public ProductCategory() {
-    }
-
-    public ProductCategory(String name, int parent) {
-        this.name = name;
-        this.parent = parent;
-    }
-
-    public ProductCategory(String name) {
-        this.name = name;
-        this.parent = -1;
     }
 
     @Override

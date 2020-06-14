@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -34,30 +33,29 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProductResourceTest {
 
-    private static final String DEFAULT_NAME = "Wine - White, Chardonnay";
-    private static final String UPDATED_NAME = "Wine - Prosecco Valdobiaddene";
-    private static final ProductCategory DEFAULT_CATEGORY = new ProductCategory("Vegetales", -1);
-    private static final ProductCategory UPDATED_CATEGORY = new ProductCategory("Bebidas", -1);
-    private static final Brand DEFAULT_BRAND = new Brand("Ramo", "ramo.png", "Aqui se fabrica el chocorramo");
-    private static final Brand UPDATED_BRAND = new Brand("Ramo S.A.", "ramosa.png", "Aqui se fabrica el gansito");
-    private static final String DEFAULT_PICTURE = "wine_white_chardonnay.png";
-    private static final String UPDATED_PICTURE = "wine_prosecco_valdobiaddene.png";
-    private static final HashMap<String, Object> DEFAULT_DESCRIPTION = new HashMap<String, Object>();
-    private static final HashMap<String, Object> UPDATED_DESCRIPTION = new HashMap<String, Object>();
+    private static final String DEFAULT_NAME = "Chocorramo";
+    private static final String UPDATED_NAME = "Gansito";
+    private static final String DEFAULT_CATEGORY_NAME = "Vegetales";
+    private static final String UPDATED_CATEGORY_NAME = "Bebidas";
+    private static final int DEFAULT_CATEGORY_PARENT = -1;
+    private static final int UPDATED_CATEGORY_PARENT = 1;
+    private static final String DEFAULT_BRAND_NAME = "Ramo";
+    private static final String UPDATED_BRAND_NAME = "Ramo S.A.";
+    private static final String DEFAULT_BRAND_PICTURE = "ramo.png";
+    private static final String UPDATED_BRAND_PICTURE = "ramosa.png";
+    private static final String DEFAULT_BRAND_DESCRIPTION = "Aqui se fabrica el chocorramo";
+    private static final String UPDATED_BRAND_DESCRIPTION = "Aqui se fabrica el gansito";
+    private static final String DEFAULT_PICTURE = "chocorramo.png";
+    private static final String UPDATED_PICTURE = "gansito.png";
+    private static final Double DEFAULT_DESCRIPTION_1_VALUE = 10.5;
+    private static final Double UPDATED_DESCRIPTION_1_VALUE = 20.5;
+    private static final String DEFAULT_DESCRIPTION_2_VALUE = "1234567";
+    private static final String UPDATED_DESCRIPTION_2_VALUE = "7654321";
 
     private static final int NB_PRODUCTS= 1000;
-    private static final int FOUND_PRODUCTS = 66;
+    private static final int FOUND_PRODUCTS_BY_NAME = 785;
+    private static final int FOUND_PRODUCTS_BY_CATEGORY = 54;
     private static ObjectId productId;
-
-
-    @Test
-    public void testHelloEndpoint() {
-        given()
-          .when().get("/api/products/hello")
-          .then()
-             .statusCode(200)
-             .body(is("hello"));
-    }
 
     @Test
     void shouldPingOpenAPI() {
@@ -108,7 +106,7 @@ public class ProductResourceTest {
     }
 
     @Test
-    void shouldFindProducts() {
+    void shouldFindProductsByName() {
         List<Product> products = given()
             .queryParam("q", "Wine - White, Schroder And Schyl")
             .when().get("/api/search")
@@ -116,21 +114,42 @@ public class ProductResourceTest {
             .statusCode(OK.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_JSON)
             .extract().body().as(getProductTypeRef());
-        assertEquals(FOUND_PRODUCTS, products.size());
+        assertEquals(FOUND_PRODUCTS_BY_NAME, products.size());
+    }
+
+    @Test
+    void shouldFindProductsByCategory() {
+        List<Product> products = given()
+            .queryParam("q", "Automotive")
+            .when().get("/api/search")
+            .then()
+            .statusCode(OK.getStatusCode())
+            .header(CONTENT_TYPE, APPLICATION_JSON)
+            .extract().body().as(getProductTypeRef());
+        assertEquals(FOUND_PRODUCTS_BY_CATEGORY, products.size());
     }
 
     @Test
     @Order(2)
     void shouldAddAnItem() {
-        DEFAULT_DESCRIPTION.put("weight", 10.5);
-        DEFAULT_DESCRIPTION.put("sku", "1234567");
-
         Product product = new Product();
         product.name = DEFAULT_NAME;
-        product.category = DEFAULT_CATEGORY;
-        product.brand = DEFAULT_BRAND;
+        ProductCategory category = new ProductCategory();
+        category.id = DEFAULT_CATEGORY_NAME;
+        category.parent = DEFAULT_CATEGORY_PARENT;
+        product.category = category;
+        Brand brand = new Brand();
+        brand.id = DEFAULT_BRAND_NAME;
+        brand.picture = DEFAULT_BRAND_PICTURE;
+        brand.description = DEFAULT_BRAND_DESCRIPTION;
+        product.brand = brand;
         product.picture = DEFAULT_PICTURE;
-        product.description = DEFAULT_DESCRIPTION;
+        HashMap<String, Object> description = new HashMap<String, Object>();
+        description.put("weight", DEFAULT_DESCRIPTION_1_VALUE);
+        description.put("sku", DEFAULT_DESCRIPTION_2_VALUE);
+        product.description = description;
+        
+        System.out.println(product.toString());
 
         String location = given()
             .body(product)
@@ -160,19 +179,23 @@ public class ProductResourceTest {
         String name = response.getString("name");
         assertEquals(expectedName, name);
         
-        String expectedCategory = DEFAULT_CATEGORY.name;
-        String category = response.getString("category.name");
-        assertEquals(expectedCategory, category);
+        String expectedCategoryName = DEFAULT_CATEGORY_NAME;
+        String categoryName = response.getString("category.id");
+        assertEquals(expectedCategoryName, categoryName);
+        
+        int expectedCategoryParent = DEFAULT_CATEGORY_PARENT;
+        int categoryParent = response.getInt("category.parent");
+        assertEquals(expectedCategoryParent, categoryParent);
 
-        String expectedBrandName = DEFAULT_BRAND.id;
+        String expectedBrandName = DEFAULT_BRAND_NAME;
         String brandName = response.getString("brand.id");
         assertEquals(expectedBrandName, brandName);
 
-        String expectedBrandPicture = DEFAULT_BRAND.picture;
+        String expectedBrandPicture = DEFAULT_BRAND_PICTURE;
         String brandPicture = response.getString("brand.picture");
         assertEquals(expectedBrandPicture, brandPicture);
 
-        String expectedBrandDescription = DEFAULT_BRAND.description;
+        String expectedBrandDescription = DEFAULT_BRAND_DESCRIPTION;
         String brandDescription = response.getString("brand.description");
         assertEquals(expectedBrandDescription, brandDescription);
 
@@ -180,11 +203,11 @@ public class ProductResourceTest {
         String picture = response.getString("picture");
         assertEquals(expectedPicture, picture);
 
-        double expectedWeight = (double) DEFAULT_DESCRIPTION.get("weight");
+        double expectedWeight = DEFAULT_DESCRIPTION_1_VALUE;
         double weight = response.getDouble("description.weight");
         assertTrue(expectedWeight == weight);
 
-        String expectedSku = (String) DEFAULT_DESCRIPTION.get("sku");
+        String expectedSku = DEFAULT_DESCRIPTION_2_VALUE;
         String sku = response.getString("description.sku");
         assertEquals(expectedSku, sku);
 
@@ -200,15 +223,25 @@ public class ProductResourceTest {
     @Order(3)
     @Context
     void shouldUpdateAnItem(){
-        UPDATED_DESCRIPTION.put("weight", 21.0);
-        UPDATED_DESCRIPTION.put("sku", "7654321");
         Product product = new Product();
         product.id = productId;
         product.name = UPDATED_NAME;
-        product.category = UPDATED_CATEGORY;
-        product.brand = UPDATED_BRAND;
+        ProductCategory category = new ProductCategory();
+        category.id = UPDATED_CATEGORY_NAME;
+        category.parent = UPDATED_CATEGORY_PARENT;
+        product.category = category;
+        Brand brand = new Brand();
+        brand.id = UPDATED_BRAND_NAME;
+        brand.picture = UPDATED_BRAND_PICTURE;
+        brand.description = UPDATED_BRAND_DESCRIPTION;
+        product.brand = brand;
         product.picture = UPDATED_PICTURE;
-        product.description = UPDATED_DESCRIPTION;
+        HashMap<String, Object> description = new HashMap<String, Object>();
+        description.put("weight", UPDATED_DESCRIPTION_1_VALUE);
+        description.put("sku", UPDATED_DESCRIPTION_2_VALUE);
+        product.description = description;
+
+        System.out.println(product.toString());
 
         JsonPath response = given()
             .contentType("application/json")
@@ -222,33 +255,41 @@ public class ProductResourceTest {
             .header(CONTENT_TYPE, APPLICATION_JSON)
             .extract().jsonPath();
 
-        String expectedName = UPDATED_NAME;
-        String name = response.getString("name");
-        assertEquals(expectedName, name);
-
-        String expectedBrandName = UPDATED_BRAND.id;
-        String brandName = response.getString("brand.id");
-        assertEquals(expectedBrandName, brandName);
-
-        String expectedBrandPicture = UPDATED_BRAND.picture;
-        String brandPicture = response.getString("brand.picture");
-        assertEquals(expectedBrandPicture, brandPicture);
-
-        String expectedBrandDescription = UPDATED_BRAND.description;
-        String brandDescription = response.getString("brand.description");
-        assertEquals(expectedBrandDescription, brandDescription);
-
-        String expectedPicture = UPDATED_PICTURE;
-        String picture = response.getString("picture");
-        assertEquals(expectedPicture, picture);
-
-        double expectedWeight = (double) UPDATED_DESCRIPTION.get("weight");
-        double weight = response.getDouble("description.weight");
-        assertTrue(expectedWeight == weight);
-
-        String expectedSku = (String) UPDATED_DESCRIPTION.get("sku");
-        String sku = response.getString("description.sku");
-        assertEquals(expectedSku, sku);
+            String expectedName = UPDATED_NAME;
+            String name = response.getString("name");
+            assertEquals(expectedName, name);
+            
+            String expectedCategoryName = UPDATED_CATEGORY_NAME;
+            String categoryName = response.getString("category.id");
+            assertEquals(expectedCategoryName, categoryName);
+            
+            int expectedCategoryParent = UPDATED_CATEGORY_PARENT;
+            int categoryParent = response.getInt("category.parent");
+            assertEquals(expectedCategoryParent, categoryParent);
+    
+            String expectedBrandName = UPDATED_BRAND_NAME;
+            String brandName = response.getString("brand.id");
+            assertEquals(expectedBrandName, brandName);
+    
+            String expectedBrandPicture = UPDATED_BRAND_PICTURE;
+            String brandPicture = response.getString("brand.picture");
+            assertEquals(expectedBrandPicture, brandPicture);
+    
+            String expectedBrandDescription = UPDATED_BRAND_DESCRIPTION;
+            String brandDescription = response.getString("brand.description");
+            assertEquals(expectedBrandDescription, brandDescription);
+    
+            String expectedPicture = UPDATED_PICTURE;
+            String picture = response.getString("picture");
+            assertEquals(expectedPicture, picture);
+    
+            double expectedWeight = UPDATED_DESCRIPTION_1_VALUE;
+            double weight = response.getDouble("description.weight");
+            assertTrue(expectedWeight == weight);
+    
+            String expectedSku = UPDATED_DESCRIPTION_2_VALUE;
+            String sku = response.getString("description.sku");
+            assertEquals(expectedSku, sku);
 
         List<Product> products = given()
             .when().get("/api/products").then()

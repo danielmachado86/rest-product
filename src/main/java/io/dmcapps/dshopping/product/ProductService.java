@@ -58,23 +58,35 @@ public class ProductService {
             paramName += String.format("{'name':{'$regex':/.*%s.*/i}},", s);
             paramCategoryName += String.format("{'category.name':{'$regex':/.*%s.*/i}},", s);
         }
-        String param = paramName + paramCategoryName;
+        String param = "{ $or: [ " + paramName + paramCategoryName + "] }";
         return param;
     }
 
-    
-
     public Product persistProduct(Product product) {
+        Brand brand = checkBrandExists(product.brand.id);
+        if(brand == null){
+            Brand.persist(product.brand);
+        } else {
+            product.brand = brand;
+        }
         Product.persist(product);
         return product;
     }
 
-    public Product updateProduct(Product product) {
-        Product entity = Product.findById(product.id);
+    @Transactional(SUPPORTS)
+    private Brand checkBrandExists(String id) {
+        Brand brand = Brand.findById(id);
+		return brand;
+	}
+
+	public Product updateProduct(Product product) {
+        Product entity = findProductById(product.id);
         entity.name = product.name;
+        entity.category = product.category;
         entity.brand = product.brand;
         entity.picture = product.picture;
         entity.description = product.description;
+        entity.update();
         return entity;
     }
 
