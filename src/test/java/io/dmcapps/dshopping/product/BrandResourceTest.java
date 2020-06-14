@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -41,15 +40,6 @@ public class BrandResourceTest {
     private static final int NB_BRANDS = 64;
     private static String brandId;
 
-
-    @Test
-    public void testHelloEndpoint() {
-        given()
-          .when().get("/api/brands/hello")
-          .then()
-             .statusCode(200)
-             .body(is("hello"));
-    }
 
     private String getRandomHexString(int numchars){
         Random r = new Random();
