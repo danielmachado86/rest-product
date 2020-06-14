@@ -17,7 +17,6 @@ import java.net.URI;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 @Path("/api/brands")
 @Produces(APPLICATION_JSON)
@@ -89,13 +88,6 @@ public class BrandResource {
         service.deleteBrand(id);
         LOGGER.debug("Brand deleted with " + id);
         return Response.noContent().build();
-    }
-
-    @GET
-    @Produces(TEXT_PLAIN)
-    @Path("/hello")
-    public String hello() {
-        return "hello";
     }
 
 }

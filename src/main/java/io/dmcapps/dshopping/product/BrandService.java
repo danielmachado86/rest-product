@@ -33,6 +33,7 @@ public class BrandService {
         entity.id = brand.id;
         entity.picture = brand.picture;
         entity.description = brand.description;
+        entity.update();
         return entity;
     }
 
@@ -40,4 +41,5 @@ public class BrandService {
         Brand brand = Brand.findById(id);
         brand.delete();
     }
+
 }

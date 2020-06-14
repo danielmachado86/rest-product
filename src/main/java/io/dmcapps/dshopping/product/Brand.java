@@ -34,11 +34,6 @@ public class Brand extends PanacheMongoEntityBase{
     public Brand() {
         
     }
-    public Brand(String name, String picture, String description) {
-        this.id = name;
-        this.picture = picture;
-        this.description = description;
-    }
 
     @Override
     public String toString() {
