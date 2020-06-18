@@ -56,7 +56,7 @@ public class ProductService {
         String paramCategoryName = "";
         for (String s: splittedQuery) {           
             paramName += String.format("{'name':{'$regex':/.*%s.*/i}},", s);
-            paramCategoryName += String.format("{'category.name':{'$regex':/.*%s.*/i}},", s);
+            paramCategoryName += String.format("{'category._id':{'$regex':/.*%s.*/i}},", s);
         }
         String param = "{ $or: [ " + paramName + paramCategoryName + "] }";
         return param;

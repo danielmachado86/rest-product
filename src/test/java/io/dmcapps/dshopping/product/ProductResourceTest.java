@@ -37,8 +37,8 @@ public class ProductResourceTest {
     private static final String UPDATED_NAME = "Gansito";
     private static final String DEFAULT_CATEGORY_NAME = "Vegetales";
     private static final String UPDATED_CATEGORY_NAME = "Bebidas";
-    private static final int DEFAULT_CATEGORY_PARENT = -1;
-    private static final int UPDATED_CATEGORY_PARENT = 1;
+    private static final String DEFAULT_CATEGORY_PARENT = "Huerta";
+    private static final String UPDATED_CATEGORY_PARENT = "Mercado";
     private static final String DEFAULT_BRAND_NAME = "Ramo";
     private static final String UPDATED_BRAND_NAME = "Ramo S.A.";
     private static final String DEFAULT_BRAND_PICTURE = "ramo.png";
@@ -53,8 +53,8 @@ public class ProductResourceTest {
     private static final String UPDATED_DESCRIPTION_2_VALUE = "7654321";
 
     private static final int NB_PRODUCTS= 1000;
-    private static final int FOUND_PRODUCTS_BY_NAME = 785;
-    private static final int FOUND_PRODUCTS_BY_CATEGORY = 54;
+    private static final int FOUND_PRODUCTS_BY_NAME = 781;
+    private static final int FOUND_PRODUCTS_BY_CATEGORY = 52;
     private static ObjectId productId;
 
     @Test
@@ -120,7 +120,7 @@ public class ProductResourceTest {
     @Test
     void shouldFindProductsByCategory() {
         List<Product> products = given()
-            .queryParam("q", "Automotive")
+            .queryParam("q", "Computers")
             .when().get("/api/search")
             .then()
             .statusCode(OK.getStatusCode())
@@ -183,8 +183,8 @@ public class ProductResourceTest {
         String categoryName = response.getString("category.id");
         assertEquals(expectedCategoryName, categoryName);
         
-        int expectedCategoryParent = DEFAULT_CATEGORY_PARENT;
-        int categoryParent = response.getInt("category.parent");
+        String expectedCategoryParent = DEFAULT_CATEGORY_PARENT;
+        String categoryParent = response.getString("category.parent");
         assertEquals(expectedCategoryParent, categoryParent);
 
         String expectedBrandName = DEFAULT_BRAND_NAME;
@@ -263,8 +263,8 @@ public class ProductResourceTest {
             String categoryName = response.getString("category.id");
             assertEquals(expectedCategoryName, categoryName);
             
-            int expectedCategoryParent = UPDATED_CATEGORY_PARENT;
-            int categoryParent = response.getInt("category.parent");
+            String expectedCategoryParent = UPDATED_CATEGORY_PARENT;
+            String categoryParent = response.getString("category.parent");
             assertEquals(expectedCategoryParent, categoryParent);
     
             String expectedBrandName = UPDATED_BRAND_NAME;

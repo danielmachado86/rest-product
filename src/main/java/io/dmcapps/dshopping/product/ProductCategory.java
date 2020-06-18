@@ -21,7 +21,7 @@ public class ProductCategory extends PanacheMongoEntityBase {
     @BsonId
     @JsonSerialize(using = ToStringSerializer.class)
     public String id;
-    public int parent;
+    public String parent;
 
     public ProductCategory() {
     }
