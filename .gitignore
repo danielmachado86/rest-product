@@ -44,3 +44,4 @@ release.properties
 .project
 .classpath
 .settings
+.mvn
