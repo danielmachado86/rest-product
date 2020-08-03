@@ -29,16 +29,16 @@ public class ProductService {
     }
     
     @Transactional(SUPPORTS)
-    public List<Product> searchProducts(String query) {
-        String param = queryStringProcessor(query);
+    public List<Product> searchProducts(String searchString) {
+        String param = searchStringProcessor(searchString);
         Stream<Product> results = Product.stream(param);
-        List<Product> processedResults = processResults(query, results);
+        List<Product> processedResults = processResults(searchString, results);
         return processedResults;
     }
 
-    private List<Product> processResults(String query, Stream<Product> results) {
+    private List<Product> processResults(String searchString, Stream<Product> results) {
         List<Result> processedResults = results
-            .map(product -> Adapter.productToResult(query, product))
+            .map(product -> Adapter.productToResult(searchString, product))
             .sorted()
             .collect(Collectors.toList());
         Collections.sort(processedResults, Collections.reverseOrder());
@@ -50,8 +50,8 @@ public class ProductService {
         return products;
     }
 
-    private String queryStringProcessor(String query) {
-        String[] splittedQuery = query.split(" ");
+    private String searchStringProcessor(String searchString) {
+        String[] splittedQuery = searchString.split(" ");
         String paramName = "";
         String paramCategoryName = "";
         for (String s: splittedQuery) {           
