@@ -18,7 +18,7 @@ import javax.ws.rs.core.Application;
         version = "1.0",
         contact = @Contact(name = "Daniel Machado", url = "https://github.com/danielmachado86")),
     servers = {
-        @Server(url = "http://localhost:8083")
+        @Server(url = "http://localhost:8082")
     },
     externalDocs = @ExternalDocumentation(url = "https://github.com/danielmachado86/rest-product", description = "Product catalog for distributed orders"),
     tags = {
